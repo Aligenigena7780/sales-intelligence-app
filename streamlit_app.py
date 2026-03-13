@@ -1,31 +1,44 @@
 import streamlit as st
 import pandas as pd
 
-st.set_page_config(page_title="Sales Intelligence", layout="wide")
+st.set_page_config(page_title="Plataforma de Inteligência de Vendas", layout="wide")
 
-st.title("📊 Sales Intelligence Platform")
+st.title("📊 Plataforma de Inteligência de Vendas")
 
-st.write("Upload your sales report to start analyzing your data.")
+st.write("Faça o upload do seu relatório de vendas para iniciar a análise.")
 
-uploaded_file = st.file_uploader("Upload a sales file (Excel or CSV)", type=["xlsx", "csv"])
+arquivo = st.file_uploader(
+    "Envie um arquivo de vendas (Excel ou CSV)", 
+    type=["xlsx", "csv"]
+)
 
-if uploaded_file:
+if arquivo:
 
-    if uploaded_file.name.endswith(".csv"):
-        df = pd.read_csv(uploaded_file)
+    if arquivo.name.endswith(".csv"):
+        df = pd.read_csv(arquivo)
     else:
-        df = pd.read_excel(uploaded_file)
+        df = pd.read_excel(arquivo)
 
-    st.subheader("Data Preview")
+    st.subheader("Pré-visualização dos dados")
     st.dataframe(df)
 
-    st.subheader("Basic Data Information")
-    st.write("Rows:", df.shape[0])
-    st.write("Columns:", df.shape[1])
+    st.subheader("Informações básicas do relatório")
 
-    numeric_columns = df.select_dtypes(include=["number"]).columns
+    col1, col2 = st.columns(2)
 
-    if len(numeric_columns) > 0:
-        column = st.selectbox("Select a numeric column to visualize", numeric_columns)
-        st.subheader("Chart")
-        st.bar_chart(df[column])
+    with col1:
+        st.metric("Quantidade de linhas", df.shape[0])
+
+    with col2:
+        st.metric("Quantidade de colunas", df.shape[1])
+
+    colunas_numericas = df.select_dtypes(include=["number"]).columns
+
+    if len(colunas_numericas) > 0:
+        coluna = st.selectbox(
+            "Selecione uma coluna numérica para visualizar",
+            colunas_numericas
+        )
+
+        st.subheader("Visualização dos dados")
+        st.bar_chart(df[coluna])
